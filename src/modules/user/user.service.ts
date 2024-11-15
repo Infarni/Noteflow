@@ -1,11 +1,15 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { User } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
 import { ReadUserDto } from './dto/read-user.dto';
-import { mapInstance } from 'src/common/utils/map-instance.util';
-import { hashValue } from 'src/common/utils/hashValue.util';
+import { PrismaService } from '@modules/prisma/prisma.service';
+import { hashValue } from '@common/utils/hashValue.util';
+import { mapInstance } from '@common/utils/map-instance.util';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -21,6 +25,19 @@ export class UserService {
     });
 
     const schema = mapInstance(ReadUserDto, user);
+
+    return schema;
+  }
+
+  async getById(id: string): Promise<ReadUserDto> {
+    const user: User | null = await this.prismaService.user.findFirst({
+      where: { id: id },
+    });
+    if (user == null) {
+      throw new NotFoundException(`User with id=${id} not found`);
+    }
+
+    const schema: ReadUserDto = mapInstance(ReadUserDto, user);
 
     return schema;
   }

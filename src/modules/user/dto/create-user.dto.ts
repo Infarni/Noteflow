@@ -5,7 +5,7 @@ import {
   USER_NAME_VALIDATION_ERROR_MESSAGE,
   USER_PASSWORD_PATTERN,
   USER_PASSWORD_VALIDATION_ERROR_MESSAGE,
-} from '../constants';
+} from '@common/constants/user.constants';
 
 export class CreateUserDto {
   @IsString()
